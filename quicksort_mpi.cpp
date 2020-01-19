@@ -6,6 +6,76 @@ typedef long long int ll;
 vector <int> input;
 vector <int> my_buffer;
 
+void quicksort(int low,int high)
+{
+	int pivot,i,j;
+
+	if(low < high)
+	{
+		i = (low-1);
+		pivot = my_buffer[high];
+
+		for(j=low;j<high;j++)
+		{
+			if(my_buffer[j]<pivot)
+			{
+				i++;
+				swap(my_buffer[i],my_buffer[j]);
+			}
+		}
+
+		swap(my_buffer[i+1],my_buffer[high]);
+
+		quicksort(low,i);
+		quicksort(i+2,high);
+	}
+}
+
+vector <int> merge(vector <int> v1,int n1,vector <int> v2,int n2)
+{
+	int t,i,j,k;
+
+	vector <int> aux(n1+n2);
+
+	i = 0;
+	j = 0;
+	t = 0;
+	while(i < n1 && j < n2)
+	{
+		if(v1[i] <= v2[j])
+		{
+			aux[t] = v1[i];
+			i++;
+			t++;
+		}
+		else
+		{
+			aux[t] = v2[j];
+			j++;
+			t++;
+		}
+
+
+
+	}
+
+	while(i>= n1 && j < n2)
+	{
+		aux[t] = v2[j];
+		j++;
+		t++;
+	}
+
+	while(j >= n2 && i<n1)
+	{
+		aux[t] = v1[i];
+		i++;
+		t++;
+	}
+
+	return aux;
+}
+
 
 
 int main(int argc, char ** argv)
@@ -57,18 +127,79 @@ int main(int argc, char ** argv)
 
     MPI_Scatter(input.data(),l,MPI_INT,my_buffer.data(),l,MPI_INT,0,MPI_COMM_WORLD);
 
-    // cout << "Rank = " << rank << '\n';
-    // for(i=0;i<l;i++)
-    // {
-    // 	cout << my_buffer[i] << '\n';
-    // }
 
     if(n >= l*(rank+1))
     	m = l;
     else
     	m = (n-l*rank);
 
-    cout << "Rank = "<< rank << " " << m << '\n';
+    // cout << "Rank = "<< rank << " " << m << '\n';
+
+    quicksort(0,m-1);
+
+    // cout << "Rank = " << rank << '\n';
+    // for(i=0;i<m;i++)
+    // {
+    // 	cout << my_buffer[i] << '\n';
+    // }
+
+    // my_buffer=merge(my_buffer,m,my_buffer,m);
+
+    
+    // cout << "Rank = " << rank << '\n';
+    // for(i=0;i<my_buffer.size();i++)
+    // {
+    // 	cout << my_buffer[i] << '\n';
+    // }
+
+
+    /// Merge
+
+    MPI_Status st;
+
+    for(int step = 1;step < numprocs; step *= 2)
+    {
+    	if(rank % (2*step) != 0)
+    	{
+    		// if((rank-step) >= 0)
+    		{
+	    		MPI_Send(my_buffer.data(),m,MPI_INT,rank-step,0,MPI_COMM_WORLD);
+	    		break;
+	    	}
+    	}
+
+    	if((rank+step) < numprocs)
+    	{
+    		if(n >= l*(rank+2*step))
+    			j = l*step;
+    		else
+    			j = n - l*(rank+step);
+
+    		vector <int> o(j);
+
+    		MPI_Recv(o.data(),j,MPI_INT,(rank+step),0,MPI_COMM_WORLD,&st);
+
+    		my_buffer = merge(my_buffer,m,o,j);
+    		m += j;
+    	}
+
+    	// cout << "Rank = " << rank << '\n';
+	    // for(i=0;i<my_buffer.size();i++)
+	    // {
+	    // 	cout << my_buffer[i] << '\n';
+	    // }
+    } 
+
+
+    // if(rank == 0)
+    // {
+    // 	for(i=0;i<my_buffer.size();i++)
+    // 		cout << my_buffer[i] << '\n';
+    // }
+
+
+
+
 
 
 
