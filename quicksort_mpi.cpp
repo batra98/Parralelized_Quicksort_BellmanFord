@@ -3,12 +3,12 @@
 using namespace std;
 typedef long long int ll;
 
-vector <int> input;
-vector <int> my_buffer;
+vector <ll> input;
+vector <ll> my_buffer;
 
-void quicksort(int low,int high)
+void quicksort(ll low,ll high)
 {
-	int pivot,i,j;
+	ll pivot,i,j;
 
 	if(low < high)
 	{
@@ -31,11 +31,11 @@ void quicksort(int low,int high)
 	}
 }
 
-vector <int> merge(vector <int> v1,int n1,vector <int> v2,int n2)
+vector <ll> merge(vector <ll> v1,ll n1,vector <ll> v2,ll n2)
 {
-	int t,i,j,k;
+	ll t,i,j,k;
 
-	vector <int> aux(n1+n2);
+	vector <ll> aux(n1+n2);
 
 	i = 0;
 	j = 0;
@@ -104,7 +104,7 @@ int main(int argc, char ** argv)
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
     MPI_Comm_size( MPI_COMM_WORLD, &numprocs );
     
-    int i,j,k,l,m,n;
+    ll i,j,k,l,m,n;
     string input_filename = "",output_filename = "";
 
 
@@ -123,7 +123,7 @@ int main(int argc, char ** argv)
 
        n = input.size();
 
-       cout << n << '\n';
+       // cout << n << '\n';
 
     }
     
@@ -133,17 +133,17 @@ int main(int argc, char ** argv)
 
     /* write your code here */
 
-    MPI_Bcast(&n,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&n,1,MPI_LONG_LONG_INT,0,MPI_COMM_WORLD);
 
     if(n%numprocs == 0)
     	l = n/numprocs;
     else
     	l = n/numprocs+1;
 
-	// vector <int> my_buffer;
+	// vector <ll> my_buffer;
 	my_buffer.resize(l);
 
-    MPI_Scatter(input.data(),l,MPI_INT,my_buffer.data(),l,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Scatter(input.data(),l,MPI_LONG_LONG_INT,my_buffer.data(),l,MPI_LONG_LONG_INT,0,MPI_COMM_WORLD);
 
 
     if(n >= l*(rank+1))
@@ -175,13 +175,13 @@ int main(int argc, char ** argv)
 
     MPI_Status st;
 
-    for(int step = 1;step < numprocs; step *= 2)
+    for(ll step = 1;step < numprocs; step *= 2)
     {
     	if(rank % (2*step) != 0)
     	{
     		if((rank-step) >= 0)
     		{
-	    		MPI_Send(my_buffer.data(),m,MPI_INT,rank-step,0,MPI_COMM_WORLD);
+	    		MPI_Send(my_buffer.data(),m,MPI_LONG_LONG_INT,rank-step,0,MPI_COMM_WORLD);
 	    		break;
 	    	}
     	}
@@ -193,9 +193,9 @@ int main(int argc, char ** argv)
     		else
     			j = n - l*(rank+step);
 
-    		vector <int> o(j);
+    		vector <ll> o(j);
 
-    		MPI_Recv(o.data(),j,MPI_INT,(rank+step),0,MPI_COMM_WORLD,&st);
+    		MPI_Recv(o.data(),j,MPI_LONG_LONG_INT,(rank+step),0,MPI_COMM_WORLD,&st);
 
     		my_buffer = merge(my_buffer,m,o,j);
     		m += j;
