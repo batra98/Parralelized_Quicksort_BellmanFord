@@ -76,6 +76,22 @@ vector <int> merge(vector <int> v1,int n1,vector <int> v2,int n2)
 	return aux;
 }
 
+void write_to_file(string output_filename)
+{
+	ll i,j;
+	ofstream out_file;
+	out_file.open(output_filename);
+
+	for(i=0;i<my_buffer.size();i++)
+	{
+		out_file << my_buffer[i] << " ";
+	}
+	out_file << '\n';
+
+	out_file.close();
+
+}
+
 
 
 int main(int argc, char ** argv)
@@ -89,11 +105,13 @@ int main(int argc, char ** argv)
     MPI_Comm_size( MPI_COMM_WORLD, &numprocs );
     
     int i,j,k,l,m,n;
+    string input_filename = "",output_filename = "";
 
 
     if(rank == 0)
     {
-       string input_filename = argv[1],output_filename = argv[2];
+       input_filename = argv[1];
+       output_filename = argv[2];
        ifstream input_file(input_filename);
 
        while(input_file >> k)
@@ -161,7 +179,7 @@ int main(int argc, char ** argv)
     {
     	if(rank % (2*step) != 0)
     	{
-    		// if((rank-step) >= 0)
+    		if((rank-step) >= 0)
     		{
 	    		MPI_Send(my_buffer.data(),m,MPI_INT,rank-step,0,MPI_COMM_WORLD);
 	    		break;
@@ -191,11 +209,15 @@ int main(int argc, char ** argv)
     } 
 
 
-    // if(rank == 0)
-    // {
-    // 	for(i=0;i<my_buffer.size();i++)
-    // 		cout << my_buffer[i] << '\n';
-    // }
+    if(rank == 0)
+    {
+    	// for(i=0;i<my_buffer.size();i++)
+    		// cout << my_buffer[i] << '\n';
+
+    	write_to_file(output_filename);
+
+
+    }
 
 
 
