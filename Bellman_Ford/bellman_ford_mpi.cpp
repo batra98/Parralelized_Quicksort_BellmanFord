@@ -1,6 +1,7 @@
 #include<mpi.h>
 #include<bits/stdc++.h>
 using namespace std;
+#define INF 1000000009
 
 typedef long long int ll;
 
@@ -78,16 +79,85 @@ int main(int argc,char **argv)
     // cout << "Rank = " << rank << '\n';
 
     // for(i=0;i<(l);i++)
-    //     cout << loc_edge_u[i] << " " << loc_edge_v[i] << " " << loc_weight[i] << '\n';
+        // cout << loc_edge_u[i] << " " << loc_edge_v[i] << " " << loc_weight[i] << '\n';
 
-    if(n >= (l*(rank+1)))
+    if(m >= (l*(rank+1)))
         local_end = l;
     else
-        local_end = (n-l*rank);
+        local_end = (m-l*rank);
+
+    // cout << "LOCAL_END = " << local_end << '\n';
+
 
 
 
     ///Bellman-Ford
+
+    vector <ll> distance(n+1);
+    bool changed = false;
+
+    for(i=1;i<=n;i++)
+        distance[i] = INF;
+
+    distance[s] = 0;
+
+    // cout << "Rank = " << rank << '\n';
+
+    // for(i=1;i<=n;i++)
+    //     cout << i << " " << distance[i] << '\n';
+
+
+    for(i=0;i<(n-1);i++)
+    {
+        // cout << "LOCAL_END = " << local_end << '\n';
+        changed = false;
+        for(j=0;j<l;j++)
+        {
+            if(distance[loc_edge_u[j]]+loc_weight[j] < distance[loc_edge_v[j]])
+            {
+                distance[loc_edge_v[j]] = distance[loc_edge_u[j]] + loc_weight[j];
+                changed = true;
+            }
+
+            if(distance[loc_edge_v[j]]+loc_weight[j] < distance[loc_edge_u[j]])
+            {
+                distance[loc_edge_u[j]] = distance[loc_edge_v[j]] + loc_weight[j];
+                changed = true;
+            }
+        }
+
+        MPI_Allreduce(MPI_IN_PLACE,&changed,1,MPI_CXX_BOOL,MPI_LOR,MPI_COMM_WORLD);
+        MPI_Allreduce(MPI_IN_PLACE,distance.data(),n+1,MPI_LONG_LONG_INT,MPI_MIN,MPI_COMM_WORLD);
+        // MPI_Bcast(distance.data(),n,MPI_LONG_LONG_INT,0,MPI_COMM_WORLD);
+        // if(rank == 0)
+        // {
+        //     cout << "Rank = " << rank << '\n';
+        //     for(k=1;k<=n;k++)
+        //     {
+        //         cout << k << " " << distance[k] << '\n';
+        //     }
+
+        //     // cout << i << '\n';
+        // }
+
+            // cout << changed << '\n';
+
+        if(changed == false)
+            break;
+
+    }
+
+
+
+
+
+    if(rank == 0)
+    {
+        for(i=1;i<=n;i++)
+        {
+            cout << i << " " << distance[i] << '\n';
+        }
+    }
 
 
 

@@ -19,6 +19,7 @@ vector <int> bellman_ford(int n,int m,int src)
 
 	for(i=0;i<(n-1);i++)
 	{
+		changed = false;
 		for(j=0;j<m;j++)
 		{
 			if(distance[edges[j].second.first] + edges[j].first < distance[edges[j].second.second])
@@ -26,7 +27,15 @@ vector <int> bellman_ford(int n,int m,int src)
 				distance[edges[j].second.second] = distance[edges[j].second.first] + edges[j].first;
 				changed = true;
 			}
+
+			if(distance[edges[j].second.second] + edges[j].first < distance[edges[j].second.first])
+			{
+				distance[edges[j].second.first] = distance[edges[j].second.second] + edges[j].first;
+				changed = true;
+			}
 		}
+
+		
 
 		if(changed == false)
 			break;
