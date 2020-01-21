@@ -146,10 +146,12 @@ int main(int argc, char ** argv)
     MPI_Scatter(input.data(),l,MPI_LONG_LONG_INT,my_buffer.data(),l,MPI_LONG_LONG_INT,0,MPI_COMM_WORLD);
 
 
+
     if(n >= l*(rank+1))
     	m = l;
     else
     	m = (n-l*rank);
+    m = max(m,(ll)0);
 
     // cout << "Rank = "<< rank << " " << m << '\n';
 
@@ -177,9 +179,12 @@ int main(int argc, char ** argv)
 
     for(ll step = 1;step < numprocs; step *= 2)
     {
+    	// cout << "Rank = " << rank << " " << step << '\n';
+    	if(m==0)
+    		break;
     	if(rank % (2*step) != 0)
     	{
-    		if((rank-step) >= 0)
+    		// if((rank-step) >= 0)
     		{
 	    		MPI_Send(my_buffer.data(),m,MPI_LONG_LONG_INT,rank-step,0,MPI_COMM_WORLD);
 	    		break;
@@ -192,6 +197,9 @@ int main(int argc, char ** argv)
     			j = l*step;
     		else
     			j = n - l*(rank+step);
+
+    		if(j <= 0)
+    			continue;
 
     		vector <ll> o(j);
 
@@ -206,6 +214,9 @@ int main(int argc, char ** argv)
 	    // {
 	    // 	cout << my_buffer[i] << '\n';
 	    // }
+
+	    // break;
+
     } 
 
 
