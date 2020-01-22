@@ -81,10 +81,10 @@ int main(int argc,char **argv)
     // for(i=0;i<(l);i++)
         // cout << loc_edge_u[i] << " " << loc_edge_v[i] << " " << loc_weight[i] << '\n';
 
-    if(m >= (l*(rank+1)))
-        local_end = l;
-    else
-        local_end = (m-l*rank);
+    // if(m >= (l*(rank+1)))
+    //     local_end = l;
+    // else
+    //     local_end = (m-l*rank);
 
     // cout << "LOCAL_END = " << local_end << '\n';
 

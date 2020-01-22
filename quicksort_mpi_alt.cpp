@@ -5,69 +5,15 @@ typedef long long int ll;
 
 vector <ll> input;
 vector <ll> my_buffer;
-
-void insertion_sort(int low,int high)
-{
-	int i,j,k;
-
-	for(i=low;i<=high;i++)
-	{
-		for(j=i;j>low && (my_buffer[j] < my_buffer[j-1]);j--)
-		{
-			swap(my_buffer[j],my_buffer[j-1]);
-		}
-	}
-}
-
-int median(int low,int high)
-{
-	int a,b,c,d,e,f;
-
-	srand(time(NULL));
-	a = low + rand()%(high-low);
-	b = low + rand()%(high-low);
-	c = low + rand()%(high-low);
-
-	// cout << a << " " << b << " " << c << '\n'; 
-
-	if(my_buffer[a]<my_buffer[b])
-	{
-		if(my_buffer[b]<my_buffer[c])
-			return b;
-		else if(my_buffer[a]<my_buffer[c])
-			return c;
-		else
-			return a;
-	}
-	else
-	{
-		if(my_buffer[a]>my_buffer[c])
-			return a;
-		else if(my_buffer[b]<my_buffer[c])
-			return c;
-		else
-			return b;
-	}
-}
+vector <ll> extra;
 
 void quicksort(ll low,ll high)
 {
-	ll pivot,i,j,random,p;
+	ll pivot,i,j;
 
 	if(low < high)
 	{
-		if((high-low) <= 20)
-		{
-			insertion_sort(low,high);
-			return;
-		}
-
 		i = (low-1);
-
-		random = median(low,high);
-
-		swap(my_buffer[high],my_buffer[random]);
-		
 		pivot = my_buffer[high];
 
 		for(j=low;j<high;j++)
@@ -155,7 +101,10 @@ string isSorted(int n)
 	for(i=1;i<n;i++)
 	{
 		if(k>my_buffer[i])
+        {
+            cout << i << '\n';
 			return "NO\n";
+        }
 
 		k = my_buffer[i];
 	}
@@ -209,10 +158,10 @@ int main(int argc, char ** argv)
 
     MPI_Bcast(&n,1,MPI_LONG_LONG_INT,0,MPI_COMM_WORLD);
 
-    if(n%numprocs == 0)
-    	l = n/numprocs;
-    else
-    	l = n/numprocs+1;
+    // if(n%numprocs == 0)
+    l = n/numprocs;
+    // else
+    	// l = n/numprocs+1;
 
 	// vector <ll> my_buffer;
 	my_buffer.resize(l);
@@ -221,18 +170,22 @@ int main(int argc, char ** argv)
 
 
 
-    if(n >= l*(rank+1))
-    	m = l;
-    else
-    	m = (n-l*rank);
-    m = max(m,(ll)0);
+    if(rank == 0)
+    {
+        for(i=(l*numprocs);i<n;i++)
+            extra.push_back(input[i]);
+
+        sort(extra.begin(),extra.end());
+        my_buffer = merge(my_buffer,l,extra,n%numprocs);
+        l = l+n%numprocs;
+    }
 
     // cout << "Rank = "<< rank << " " << m << '\n';
 
-    quicksort(0,m-1);
+    quicksort(0,l-1);
 
     // cout << "Rank = " << rank << '\n';
-    // for(i=0;i<m;i++)
+    // for(i=0;i<l;i++)
     // {
     // 	cout << my_buffer[i] << '\n';
     // }
@@ -259,27 +212,29 @@ int main(int argc, char ** argv)
     	{
     		// if((rank-step) >= 0)
     		{
-	    		MPI_Send(my_buffer.data(),m,MPI_LONG_LONG_INT,rank-step,0,MPI_COMM_WORLD);
+	    		MPI_Send(my_buffer.data(),l,MPI_LONG_LONG_INT,rank-step,0,MPI_COMM_WORLD);
 	    		break;
 	    	}
     	}
 
     	if((rank+step) < numprocs)
     	{
-    		if(n >= l*(rank+2*step))
-    			j = l*step;
+    		if(n >= (n/numprocs)*(rank+2*step))
+    			j = (n/numprocs)*step;
     		else
-    			j = n - l*(rank+step);
+    			j = n - (n/numprocs)*(rank+step);
 
-    		if(j <= 0)
-    			continue;
+    		// if(j <= 0)
+    		// 	continue;
+
+            // j = n/numprocs;
 
     		vector <ll> o(j);
 
     		MPI_Recv(o.data(),j,MPI_LONG_LONG_INT,(rank+step),0,MPI_COMM_WORLD,&st);
 
-    		my_buffer = merge(my_buffer,m,o,j);
-    		m += j;
+    		my_buffer = merge(my_buffer,l,o,j);
+    		l += j;
     	}
 
     	// cout << "Rank = " << rank << '\n';
