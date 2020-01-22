@@ -92,10 +92,29 @@ void write_to_file(string output_filename)
 
 }
 
+string isSorted(int n)
+{
+	int i,j,k,l,m;
+
+	k = my_buffer[0];
+	for(i=1;i<n;i++)
+	{
+		if(k>my_buffer[i])
+			return "NO\n";
+
+		k = my_buffer[i];
+	}
+
+
+	return "YES\n";
+}
+
 
 
 int main(int argc, char ** argv)
 {
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
 	int rank, numprocs;
 
     /* start up MPI */
@@ -180,8 +199,7 @@ int main(int argc, char ** argv)
     for(ll step = 1;step < numprocs; step *= 2)
     {
     	// cout << "Rank = " << rank << " " << step << '\n';
-    	if(m==0)
-    		break;
+
     	if(rank % (2*step) != 0)
     	{
     		// if((rank-step) >= 0)
@@ -226,6 +244,9 @@ int main(int argc, char ** argv)
     		// cout << my_buffer[i] << '\n';
 
     	write_to_file(output_filename);
+
+    	cout << isSorted(n);
+
 
 
     }
