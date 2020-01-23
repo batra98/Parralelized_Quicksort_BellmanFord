@@ -1,7 +1,7 @@
 #include<mpi.h>
 #include<bits/stdc++.h>
 using namespace std;
-#define INF 1000000009
+#define INF LLONG_MAX
 
 typedef long long int ll;
 
@@ -12,6 +12,22 @@ vector <ll> weight;
 vector <ll> loc_edge_u;
 vector <ll> loc_edge_v;
 vector <ll> loc_weight;
+
+void write_to_file(vector <ll> distance,string output_filename)
+{
+    ll i,j;
+    ofstream out_file;
+    out_file.open(output_filename);
+
+    for(i=1;i<(ll)distance.size();i++)
+    {
+        out_file << i << " " <<  distance[i] << '\n';
+    }
+    // out_file << '\n';
+
+    out_file.close();
+
+}
 
 
 int main(int argc,char **argv)
@@ -31,6 +47,7 @@ int main(int argc,char **argv)
 
     if(rank == 0)
     {
+        cout << INF << '\n';
         input_filename = argv[1];
         output_filename = argv[2];
 
@@ -113,13 +130,13 @@ int main(int argc,char **argv)
         changed = false;
         for(j=0;j<l;j++)
         {
-            if(distance[loc_edge_u[j]]+loc_weight[j] < distance[loc_edge_v[j]])
+            if(distance[loc_edge_u[j]] < distance[loc_edge_v[j]]-loc_weight[j])
             {
                 distance[loc_edge_v[j]] = distance[loc_edge_u[j]] + loc_weight[j];
                 changed = true;
             }
 
-            if(distance[loc_edge_v[j]]+loc_weight[j] < distance[loc_edge_u[j]])
+            if(distance[loc_edge_v[j]] < distance[loc_edge_u[j]]-loc_weight[j])
             {
                 distance[loc_edge_u[j]] = distance[loc_edge_v[j]] + loc_weight[j];
                 changed = true;
@@ -153,10 +170,12 @@ int main(int argc,char **argv)
 
     if(rank == 0)
     {
-        for(i=1;i<=n;i++)
-        {
-            cout << i << " " << distance[i] << '\n';
-        }
+        // for(i=1;i<=n;i++)
+        // {
+        //     cout << i << " " << distance[i] << '\n';
+        // }
+
+        write_to_file(distance,output_filename);
     }
 
 

@@ -1,15 +1,15 @@
 #include<bits/stdc++.h>
 using namespace std;
-#define INF 1000000009
+#define INF LLONG_MAX
 
 typedef long long int ll;
 
-vector < pair<int,pair<int,int> > > edges;
+vector < pair<ll,pair<ll,ll> > > edges;
 
-vector <int> bellman_ford(int n,int m,int src)
+vector <ll> bellman_ford(ll n,ll m,ll src)
 {
-	int i,j,k;
-	vector <int> distance(n);
+	ll i,j,k;
+	vector <ll> distance(n+1);
 	bool changed = false;
 
 	for(i=1;i<=n;i++)
@@ -22,13 +22,13 @@ vector <int> bellman_ford(int n,int m,int src)
 		changed = false;
 		for(j=0;j<m;j++)
 		{
-			if(distance[edges[j].second.first] + edges[j].first < distance[edges[j].second.second])
+			if(distance[edges[j].second.first] < distance[edges[j].second.second]-edges[j].first)
 			{
 				distance[edges[j].second.second] = distance[edges[j].second.first] + edges[j].first;
 				changed = true;
 			}
 
-			if(distance[edges[j].second.second] + edges[j].first < distance[edges[j].second.first])
+			if(distance[edges[j].second.second] < distance[edges[j].second.first]-edges[j].first)
 			{
 				distance[edges[j].second.first] = distance[edges[j].second.second] + edges[j].first;
 				changed = true;
@@ -47,9 +47,27 @@ vector <int> bellman_ford(int n,int m,int src)
 
 }
 
+void write_to_file(ll n,vector <ll> distance,string output_filename)
+{
+	ll i,j;
+	ofstream out_file;
+	out_file.open(output_filename);
+
+	for(i=1;i<=n;i++)
+	{
+		out_file << i << " " << distance[i] << '\n';
+		cout << i << " " << distance[i] << '\n';
+
+	}
+	// out_file << '\n';
+
+	out_file.close();
+
+}
+
 int main(int argc,char ** argv)
 {
-	int s,i,j,k,l,m,n,u,v,w;
+	ll s,i,j,k,l,m,n,u,v,w;
 
 	string input_filename = argv[1],output_filename = argv[2];
 
@@ -62,25 +80,27 @@ int main(int argc,char ** argv)
 	{
 		input_file >> u >> v >> w;
 
-		edges.push_back(pair <int,pair <int,int> > (w,pair <int,int> (u,v)));
+		edges.push_back(pair <ll,pair <ll,ll> > (w,pair <ll,ll> (u,v)));
 
 	}
 
 	input_file >> s;
 
-	for(i=0;i<edges.size();i++)
-	{
-		cout << edges[i].first << " " << edges[i].second.first << " " << edges[i].second.second << '\n';
-	}
+	// for(i=0;i<edges.size();i++)
+	// {
+	// 	cout << edges[i].first << " " << edges[i].second.first << " " << edges[i].second.second << '\n';
+	// }
 	// cout << '\n';
-	vector <int> distance;
+	vector <ll> distance;
 	distance = bellman_ford(n,m,s);
 
 
-	for(i=1;i<=n;i++)
-	{
-		cout << i << " " << distance[i] << '\n';
-	}
+	// for(i=1;i<=n;i++)
+	// {
+	// 	cout << i << " " << distance[i] << '\n';
+	// }
+
+	write_to_file(n,distance,output_filename);
 
 
 

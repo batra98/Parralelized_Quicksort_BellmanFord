@@ -147,15 +147,27 @@ void write_to_file(string output_filename)
 
 }
 
-string isSorted(int n)
+string isSorted(ll n)
 {
-	int i,j,k,l,m;
+
+	ll i,j,k,l,m;
+
+	l = my_buffer.size();
+
+	if(l!=n)
+	{
+		return "NO\n";
+
+	}
 
 	k = my_buffer[0];
 	for(i=1;i<n;i++)
 	{
 		if(k>my_buffer[i])
+		{
+			cout << k << " " << my_buffer[i] << '\n';
 			return "NO\n";
+		}
 
 		k = my_buffer[i];
 	}

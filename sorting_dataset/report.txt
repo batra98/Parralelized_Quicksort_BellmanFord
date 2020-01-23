@@ -1,0 +1,15 @@
+1. sequential -	0.73s	parallel - 0.255683
+2. sequential -	0.69s	parallel - 0.239465
+3. sequential -	0.71s	parallel - 0.238726
+4. sequential -	0.69s	parallel - 0.256124
+5. sequential -	0.53s	parallel - 0.181170
+6. sequential -	0.53s	parallel - 0.184042
+7. sequential -	0.53s	parallel - 0.180449
+8. sequential -	0.65s	parallel - 0.202196
+9. sequential -	0.61s	parallel - 0.210940
+10. sequential - 0.73s		parallel - 0.257046
+11. sequential - 0.72s		parallel - 0.246512
+12. sequential - 0.74s		parallel - 0.253483
+13. sequential - 0.73s		parallel - 0.247476
+14. sequential - 0.72s		parallel - 0.245486
+15. sequential - 0.72s		parallel - 0.245768
