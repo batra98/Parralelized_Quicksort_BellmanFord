@@ -11,7 +11,7 @@ using namespace std;
 #define MAX_VERTICES 200 
 
 // Define the maximum number of edges 
-#define MAX_EDGES 10000 
+#define MAX_EDGES 100000000
 
 // Define the maximum weight of edges 
 #define MAXWEIGHT 20000
@@ -39,7 +39,7 @@ int main()
 		// Define the maximum number of edges of the graph 
 		// Since the most dense graph can have N*(N-1)/2 edges 
 		// where N = nnumber of vertices in the graph 
-		NUMEDGE = 2000000; 
+		NUMEDGE = 2500000; 
 
 		while (NUMEDGE > NUM*(NUM-1)/2) 
 			NUMEDGE = 1 + rand() % MAX_EDGES; 
