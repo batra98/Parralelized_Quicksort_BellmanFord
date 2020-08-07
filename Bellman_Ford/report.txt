@@ -1,5 +1,0 @@
-1. sequential-0.000317 parallel-0.000396
-2. sequential-0.018164 parallel-0.009953
-3. sequential-0.369531 parallel-0.156303
-4. sequential-0.369531 parallel-0.156303
-5. sequential-0.473369 parallel-0.188599
