@@ -1,6 +1,3 @@
-#DEVELOPER
-	Gaurav Batra
-
 # Parallelized Version of Quicksort and Bellman Ford
 
 ## Parallelized version of quicksort.
